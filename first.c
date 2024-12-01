@@ -2,9 +2,8 @@
 
 int main() {
     printf("\"Get out of my house - \"");
-    return 0; // Poopsocks
+    return 0;
     /*
-    This is a multi
-    line comment
+    Test
     */
 }
