@@ -29,10 +29,39 @@ void print_vector(std::vector<std::string> vector)
   }
 }
 
+std::string program_choice() {
+  std::string choice {};
+  while (true) {
+    std::cout << "What would you like to do?\n";
+    std::cout << "  1. Find string in 8 directions\n";
+    std::cout << "  2. Find X shaped structures with MAS\n";
+    std::cout << "  3. Exit\n";
+    std::cout << "Enter your choice (1, 2 or 3): ";
+    std::cin >> choice;
+
+    if (choice == "1") {
+      std::cout << "Running 8-direction search...\n";
+      break;
+    } 
+    else if (choice == "2") {
+      std::cout << "Running X-shaped search...!\n";
+      break;
+    } 
+    else if (choice == "3") {
+      std::cout << "Bye!\n";
+      break;
+    } 
+    else {
+      std::cout << "Invalid input. Please type 1, 2 or 3. \n\n";
+    }
+  }
+  return choice;
+}
+
 std::string user_input() 
 {
   std::string input{};
-  std::cout << "What are you looking for: ";
+  std::cout << "And your string is: ";
   std::cin >> input;
   return input;
 }
@@ -122,30 +151,35 @@ int main()
 {
   std::vector<std::string> lines{read_file_into_vector()};
 
+  std::string choice {program_choice()};
 
-  auto start = std::chrono::high_resolution_clock::now();
+  if (choice == "1") {
+    auto start = std::chrono::high_resolution_clock::now();
 
-  std::vector<std::string> combinedStrings {transpose_and_add(lines)};
-  for (int x = 0; x < lines[0].size(); x++) {
-    std::pair<int, int> coordinates = {x, 0};
-    combinedStrings.push_back(get_diagonal(lines, coordinates, LEFT));
-    combinedStrings.push_back(get_diagonal(lines, coordinates, RIGHT));
+    std::vector<std::string> combinedStrings {transpose_and_add(lines)};
+    for (int x = 0; x < lines[0].size(); x++) {
+      std::pair<int, int> coordinates = {x, 0};
+      combinedStrings.push_back(get_diagonal(lines, coordinates, LEFT));
+      combinedStrings.push_back(get_diagonal(lines, coordinates, RIGHT));
+    }
+    for (int y = 1; y < lines.size(); y++) {
+      std::pair<int, int> coordinates = {0, y};
+      combinedStrings.push_back(get_diagonal(lines, coordinates, RIGHT));
+      coordinates = {lines[0].size() - 1, y};
+      combinedStrings.push_back(get_diagonal(lines, coordinates, LEFT));
+    }
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+    std::cout << "Preprocessed the file for optimal search in " << duration << " µs." << "\n";
+
+    std::string searchInput{user_input()};
+
+    int matchCases =  find_match_amount(combinedStrings, searchInput); 
+    std::cout << "This is how many examples of " << searchInput << " we have: " << matchCases << "\n";
+  } else if (choice == "2") {
+    
   }
-  for (int y = 1; y < lines.size(); y++) {
-    std::pair<int, int> coordinates = {0, y};
-    combinedStrings.push_back(get_diagonal(lines, coordinates, RIGHT));
-    coordinates = {lines[0].size() - 1, y};
-    combinedStrings.push_back(get_diagonal(lines, coordinates, LEFT));
-  }
-
-  auto end = std::chrono::high_resolution_clock::now();
-  auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-  std::cout << "Preprocessed the file for optimal search in " << duration << " µs." << "\n";
-
-  std::string searchInput{user_input()};
-
-  int matchCases =  find_match_amount(combinedStrings, searchInput); 
-  std::cout << "This is how many examples of " << searchInput << " we have: " << matchCases << "\n";
   return 0;
 }
 
